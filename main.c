@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "hash_table.h"
+#include "hashTable.h"
 
 #define MAX_NAMES 10000
 #define NAME_BUFFER_LENGTH 256
@@ -59,9 +59,10 @@ void printStringList(stringList *List) {
     if (List != NULL) {
         for (size_t i = 0; i < List->listSize; i++) {
             if (List->names[i] != NULL) {
-                printf("| %s\n", List->names[i]);
+                printf("%s, ", List->names[i]);
             }
         }
+        printf("\n");
     }
 }
 
@@ -77,13 +78,22 @@ void destroyStringList(stringList *List) {
 }
 
 int main() {
-    stringList *namesToInsert = getFileNames("teste.txt");
-    stringHashTable *s = createHashTable(HASH_TABLE_SIZE, OPEN_ADDRESS_CR, POLYNOMIAL_HASHING_FUNCTION);
+    int h = 1, a = 1;
+    printf("|-----------------------------LAB 4-----------------------------|\n");
+    printf("Choose the main hashing function (0) Polynomial | (1) Murmur3 : ");
+    scanf("%d", &h);
+    printf("Choose the addressing mode (0) Open | (1) Closed : ");
+    scanf("%d", &a);
+    printf("\n");
+    a = a & ~1 ? 1 : a;
+    h = h & ~1 ? 1 : h;
+    stringList *namesToInsert = getFileNames("arquivos-nomes-consultas/nomes_10000.txt");
+    stringHashTable *s = createHashTable(HASH_TABLE_SIZE, a, h);
     for (size_t i = 0; i < namesToInsert->listSize; i++) {
         s->add(s, *(namesToInsert->names + i));
     }
 
-    stringList *namesToLookUp = getFileNames("consultas.txt");
+    stringList *namesToLookUp = getFileNames("arquivos-nomes-consultas/consultas.txt");
     stringList *namesFound, *namesNotFound;
 
     namesFound = (stringList *)malloc(sizeof(stringList));
@@ -118,13 +128,14 @@ int main() {
     printf("\n");
     printf("> Strings found with %d steps (minimum)\n", minSearchSteps);
     for (size_t i = 0; i < namesFound->listSize; i++) {
-        if (s->searchKey(s, namesToLookUp->names[i]) == minSearchSteps) printf("| %s\n", namesToLookUp->names[i]);
+        if (s->searchKey(s, namesToLookUp->names[i]) == minSearchSteps) printf("%s, ", namesToLookUp->names[i]);
     }
+    printf("\n");
     printf("> Strings found with %d steps (maximum)\n", maxSearchSteps);
     for (size_t i = 0; i < namesFound->listSize; i++) {
-        if (s->searchKey(s, namesToLookUp->names[i]) == maxSearchSteps) printf("| %s\n", namesToLookUp->names[i]);
+        if (s->searchKey(s, namesToLookUp->names[i]) == maxSearchSteps) printf("%s, ", namesToLookUp->names[i]);
     }
-
+    printf("\n");
     destroyHashTable(s);
     destroyStringListContent(namesToInsert);
     destroyStringList(namesToInsert);

@@ -5,7 +5,7 @@
 #include <string.h>
 
 // Headers
-#include "hash_table.h"
+#include "hashTable.h"
 
 // External dependencies
 #include "dependencies/murmur3.h"
@@ -125,7 +125,10 @@ int OpenAddressingSearch(stringHashTable *hashTable, char *string) {
     int i = 0;
     if (aux != NULL) {
         i++;
-        if (aux->isActive && strcmp(aux->string, string) == 0) return i;
+        if (aux->isActive && strcmp(aux->string, string) == 0) {
+            (hashTable->entriesCheckedSoFar) += i;
+            return i;
+        }
         uint32_t hash_b = hashTable->scndHashingFunction(string, hashTable->type & 1 ? POLYNOMIAL_COEFCIENT : MURMUR_SEED_COEFCIENT);
 
         for (; aux != NULL && i < hashTable->size; i++) {
