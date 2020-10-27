@@ -8,10 +8,10 @@
 #define POLYNOMIAL_HASHING_FUNCTION 0
 #define MURMUR_HASHING_FUNCTION 1
 
-#define TABLE_SIZE 100
+#define HASH_TABLE_SIZE 20000
 
-#define POLYNOMIAL_COEFCIENT 127
-#define MURMUR_SEED_COEFCIENT 127
+#define POLYNOMIAL_COEFCIENT 7
+#define MURMUR_SEED_COEFCIENT 0x0855e30d //random number
 #endif
 
 #ifndef _BOOLEAN
@@ -27,7 +27,7 @@ typedef struct stringNode {
 
 typedef struct stringHashTable {
     uint32_t load, size;
-    size_t collisions;
+    size_t collisions, entriesCheckedSoFar;
     uint32_t (*mainHashingFunction)(char *string, uint32_t coeficient),
         (*scndHashingFunction)(char *string, uint32_t coeficient);
     stringNode **dataArray;
@@ -35,12 +35,10 @@ typedef struct stringHashTable {
     int (*delete)(struct stringHashTable *, char *string),
         (*searchKey)(struct stringHashTable *, char *string),
         (*add)(struct stringHashTable *, char *string);
-
 } stringHashTable;
 
 // HashTable Methods
-stringHashTable *createHashTable(size_t size, uint8_t addressingMode,
-                                 uint8_t hashingFunction);
+stringHashTable *createHashTable(size_t size, uint8_t addressingMode, uint8_t hashingFunction);
 void destroyHashTable(stringHashTable *hashTable);
 
 // // Addressing Methods
@@ -58,3 +56,5 @@ int OpenAddressingSearch(stringHashTable *hashTable, char *string);
 // Available Hashing Functions
 uint32_t polynomialHashing(char *string, uint32_t coeficient);
 uint32_t murmurHashing(char *string, uint32_t seed);
+
+void printHashTable(stringHashTable *hashTable, int printEntries);
