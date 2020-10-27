@@ -1,64 +1,60 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
-#ifndef HASH_CONFIG
-
+#ifndef _HASH_CONFIG
 #define OPEN_ADDRESS_CR 0
 #define CLOSED_ADDRESS_CR 1
 
-#define FST_HASH_FUNCTION 0
-#define SND_HASH_FUNCTION 1
+#define POLYNOMIAL_HASHING_FUNCTION 0
+#define MURMUR_HASHING_FUNCTION 1
 
+#define TABLE_SIZE 100
+
+#define POLYNOMIAL_COEFCIENT 127
+#define MURMUR_SEED_COEFCIENT 127
 #endif
 
-typedef struct string
-{
-    uint32_t hashValue;
-    char *string;
-    uint8_t flags;
-} string;
+#ifndef _BOOLEAN
+#define TRUE 1;
+#define FALSE 0;
+#endif
 
-typedef struct stringNode
-{
-    uint32_t hashValue;
+typedef struct stringNode {
     char *string;
-    uint8_t flags;
-    stringNode *nextString;
+    struct stringNode *nextString;
+    uint8_t isActive;
 } stringNode;
 
-typedef struct addressingMode
-{
+typedef struct stringHashTable {
+    uint32_t load, size;
+    size_t collisions;
+    uint32_t (*mainHashingFunction)(char *string, uint32_t coeficient),
+        (*scndHashingFunction)(char *string, uint32_t coeficient);
+    stringNode **dataArray;
     uint8_t type;
-    void (*deletionRoutine)(stringHashTable *, uint32_t hashValue),
-        (*insertionRoutine)(stringHashTable *, char *string),
-        (*searchRoutine)(stringHashTable *, char *string);
-} addressingMode;
+    int (*delete)(struct stringHashTable *, char *string),
+        (*searchKey)(struct stringHashTable *, char *string),
+        (*add)(struct stringHashTable *, char *string);
 
-typedef struct stringHashTable
-{
-    size_t size, load;
-    const uint32_t (*hashingRoutine)(char *);
-    const stringNode *data_array;
-    const addressingMode addressMode;
 } stringHashTable;
 
 // HashTable Methods
-stringHashTable createHashTable(size_t size, uint32_t (*hashingRoutine)(char *), addressingMode *addressMode);
-addressingMode createAddressingMode(uint8_t addressingModeCode);
-void destroyHashTable(stringHashTable* hashTable);
+stringHashTable *createHashTable(size_t size, uint8_t addressingMode,
+                                 uint8_t hashingFunction);
+void destroyHashTable(stringHashTable *hashTable);
 
 // // Addressing Methods
 
 // Closed Addressing Methods
-void ClosedAddressingInsert(stringHashTable *hashTable, char *string);
-void ClosedAddressingDelete(stringHashTable *hashTable, char *string);
-void ClosedAddressingSearch(stringHashTable *hashTable, char *string);
+int ClosedAddressingInsert(stringHashTable *hashTable, char *string);
+int ClosedAddressingDelete(stringHashTable *hashTable, char *string);
+int ClosedAddressingSearch(stringHashTable *hashTable, char *string);
 
 // Open Address Methods
-void OpenAddressingInsert(stringHashTable *hashTable, char *string);
-void OpenAddressingDelete(stringHashTable *hashTable, char *string);
-void OpenAddressingSearch(stringHashTable *hashTable, char *string);
+int OpenAddressingInsert(stringHashTable *hashTable, char *string);
+int OpenAddressingDelete(stringHashTable *hashTable, char *string);
+int OpenAddressingSearch(stringHashTable *hashTable, char *string);
 
 // Available Hashing Functions
-uint32_t polynomialHashing(char *string, uint8_t coeficient, size_t tableSize);
-uint32_t otherHashing(char *string);
+uint32_t polynomialHashing(char *string, uint32_t coeficient);
+uint32_t murmurHashing(char *string, uint32_t seed);
