@@ -10,11 +10,6 @@
 // External dependencies
 #include "dependencies/murmur3.h"
 
-/** WORKING
- * String hashing method that applies the murmur3 algorithm to the given string
- * @param string The string over which the hash will be calculated
- * @param seed //TODO
- * */
 uint32_t murmurHashing(char *string, uint32_t seed) {
     uint32_t hash;
     MurmurHash3_x86_32((const void *)string, strlen(string),
@@ -22,12 +17,6 @@ uint32_t murmurHashing(char *string, uint32_t seed) {
     return hash;
 }
 
-/** WORKING
- * String hashing method that aplies a polynomial series to the string by
- * associating the first character to the coefficient of highest order.
- *  @param string The string over which the hash will be calculated
- *  @param coeficient The coeficient used to compute the series (i.e.: p such as in zp^0+yp^1+xp^2+...)
- */
 uint32_t polynomialHashing(char *string, uint32_t coeficient) {
     size_t acum = 0;
     for (size_t i = 0; i < strlen(string); i++) {

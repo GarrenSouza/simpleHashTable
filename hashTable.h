@@ -40,6 +40,7 @@ typedef struct stringHashTable {
 // HashTable Methods
 stringHashTable *createHashTable(size_t size, uint8_t addressingMode, uint8_t hashingFunction);
 void destroyHashTable(stringHashTable *hashTable);
+void printHashTable(stringHashTable *hashTable, int printEntries);
 
 // // Addressing Methods
 
@@ -56,5 +57,3 @@ int OpenAddressingSearch(stringHashTable *hashTable, char *string);
 // Available Hashing Functions
 uint32_t polynomialHashing(char *string, uint32_t coeficient);
 uint32_t murmurHashing(char *string, uint32_t seed);
-
-void printHashTable(stringHashTable *hashTable, int printEntries);
